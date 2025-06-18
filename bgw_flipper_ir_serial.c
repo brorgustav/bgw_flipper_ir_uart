@@ -1,4 +1,5 @@
 #include <furi.h>
+#include <furi/core/log.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <furi_hal_serial.h>
@@ -133,6 +134,11 @@ int32_t bgw_flipper_ir_serial_app(void* p) {
 
     furi_hal_serial_control_init();
     st.serial_handle = furi_hal_serial_control_acquire(FuriHalSerialIdUsart);
+if(!st.serial_handle) {
+    furi_log_e("IRSerial", "Failed to acquire UART");
+    return -1;
+}
+furi_log_i("IRSerial", "App started, UART acquired");
     furi_hal_serial_init(st.serial_handle, 115200);
 
     ViewPort* vp = view_port_alloc();
