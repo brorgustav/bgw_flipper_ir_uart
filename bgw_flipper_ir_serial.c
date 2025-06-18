@@ -48,8 +48,8 @@ static void process_ir(FlameTunnelState* s, InfraredWorkerSignal* sig, uint32_t 
         size_t count;
         infrared_worker_get_raw_signal(sig, &timings, &count);
         len += snprintf(buf + len, sizeof(buf) - len, "IR[%u]:", (unsigned int)count);
-        for(size_t i = 0; i < count && len < sizeof(buf) - 10; i++) {
-            len += snprintf(buf + len, sizeof(buf) - len, " %lu", timings[i]);
+        for(size_t i = 0; i < count && len < (int)sizeof(buf) - 10; i++);
+        len += snprintf(buf + len, sizeof(buf) - len, " %lu", timings[i]);
         }
         len += snprintf(buf + len, sizeof(buf) - len, "\r\n");
     } else {
