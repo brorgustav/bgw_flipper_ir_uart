@@ -31,7 +31,10 @@ static uint32_t generate_rng(InfraredWorkerSignal* sig) {
     size_t n;
     infrared_worker_get_raw_signal(sig, &times, &n);
     uint32_t seed = furi_hal_random_get() ^ DWT->CYCCNT;
-    for(size_t i = 0; i < n; i++)seed ^= times[i] + i;
+    for(size_t i = 0; i < n; i++)
+        {
+        seed ^= times[i] + i;
+        }
     return seed;
 }
 
