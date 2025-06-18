@@ -18,7 +18,7 @@ typedef struct {
     FuriHalSerialHandle* serial_handle;
     bool running;
     bool log_to_file;
-    bool output_raw_ir; // NEW
+    bool output_raw_ir;
     uint32_t last_rng;
     FuriMutex* mutex;
     bool in_menu;
@@ -26,7 +26,6 @@ typedef struct {
     uint32_t ok_pressed_time;
 } FlameTunnelState;
 
-/* Generate RNG from IR signal */
 static uint32_t generate_rng(InfraredWorkerSignal* sig) {
     const uint32_t* times;
     size_t n;
@@ -38,7 +37,6 @@ static uint32_t generate_rng(InfraredWorkerSignal* sig) {
     return seed;
 }
 
-/* Handle an IR event */
 static void process_ir(FlameTunnelState* s, InfraredWorkerSignal* sig, uint32_t rng) {
     char buf[256];
     int len = 0;
@@ -49,9 +47,8 @@ static void process_ir(FlameTunnelState* s, InfraredWorkerSignal* sig, uint32_t 
         infrared_worker_get_raw_signal(sig, &timings, &count);
         len += snprintf(buf + len, sizeof(buf) - len, "IR[%u]:", (unsigned int)count);
         for(size_t i = 0; i < count && len < (int)sizeof(buf) - 10; i++) {
-    len += snprintf(buf + len, sizeof(buf) - len, " %lu", timings[i]);
-       }
-}
+            len += snprintf(buf + len, sizeof(buf) - len, " %lu", timings[i]);
+        }
         len += snprintf(buf + len, sizeof(buf) - len, "\r\n");
     } else {
         len = snprintf(buf, MAX_BUF, "RNG:%lu\r\n", (unsigned long)rng);
@@ -66,16 +63,14 @@ static void process_ir(FlameTunnelState* s, InfraredWorkerSignal* sig, uint32_t 
         file_stream_open(file, "/ext/flame_tunnel.log", FSAM_WRITE, FSOM_OPEN_ALWAYS);
         stream_write(file, (const uint8_t*)buf, len);
         file_stream_close(file);
-        stream_free(file); // FIXED
+        stream_free(file);
         furi_record_close(RECORD_STORAGE);
     }
 }
 
-/* IR worker callback */
 static void ir_callback(void* ctx, InfraredWorkerSignal* sig) {
     FlameTunnelState* s = ctx;
     uint32_t rng = generate_rng(sig);
-
     if(s->mutex) {
         furi_mutex_acquire(s->mutex, FuriWaitForever);
         process_ir(s, sig, rng);
@@ -83,7 +78,6 @@ static void ir_callback(void* ctx, InfraredWorkerSignal* sig) {
     }
 }
 
-/* Draw UI */
 static void draw(Canvas* canvas, void* ctx) {
     FlameTunnelState* s = ctx;
     canvas_clear(canvas);
@@ -92,7 +86,7 @@ static void draw(Canvas* canvas, void* ctx) {
     if(s->in_menu) {
         canvas_draw_str(canvas, 2, 10, "Config Menu");
         canvas_draw_str(canvas, 2, 30, s->log_to_file ? "Log ON" : "Log OFF");
-        canvas_draw_str(canvas, 2, 40, s->output_raw_ir ? "Raw IR ON" : "Raw IR OFF"); // NEW
+        canvas_draw_str(canvas, 2, 40, s->output_raw_ir ? "Raw IR ON" : "Raw IR OFF");
     } else {
         char buf[32];
         canvas_draw_str(canvas, 2, 10, "Flame Tunnel");
@@ -102,7 +96,6 @@ static void draw(Canvas* canvas, void* ctx) {
     }
 }
 
-/* Input handler */
 static void input_cb(InputEvent* ev, void* ctx) {
     FlameTunnelState* s = ctx;
     uint32_t now = furi_get_tick();
@@ -119,19 +112,18 @@ static void input_cb(InputEvent* ev, void* ctx) {
             if(ev->key == InputKeyLeft || ev->key == InputKeyRight) {
                 s->log_to_file = !s->log_to_file;
             } else if(ev->key == InputKeyUp || ev->key == InputKeyDown) {
-                s->output_raw_ir = !s->output_raw_ir; // TOGGLE
+                s->output_raw_ir = !s->output_raw_ir;
             }
         }
     }
 }
 
-/* Application entry point */
 int32_t bgw_flipper_ir_serial_app(void* p) {
     UNUSED(p);
     FlameTunnelState st = {
         .running = true,
         .log_to_file = false,
-        .output_raw_ir = false, // NEW
+        .output_raw_ir = false,
         .last_rng = 0,
         .mutex = furi_mutex_alloc(FuriMutexTypeNormal),
         .in_menu = false,
