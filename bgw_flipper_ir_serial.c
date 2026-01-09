@@ -49,7 +49,7 @@ static void process_ir(FlameTunnelState *s, InfraredWorkerSignal *sig,
     size_t count;
     infrared_worker_get_raw_signal(sig, &timings, &count);
     len +=
-      snprintf(buf + len, sizeof(buf) - len, "IR[%u]:", (unsigned int)count);
+        snprintf(buf + len, sizeof(buf) - len, "IR[%u]:", (unsigned int)count);
     for (size_t i = 0; i < count && len < (int)sizeof(buf) - 10; i++) {
       len += snprintf(buf + len, sizeof(buf) - len, " %lu", timings[i]);
     }
@@ -114,7 +114,8 @@ static void input_cb(InputEvent *ev, void *ctx) {
   } else if (ev->type == InputTypeRelease) {
     if (ev->key == InputKeyBack && now - s->back_pressed_time >= HOLD_TIME_MS) {
       s->running = false;
-    } else if (ev->key == InputKeyOk && now - s->ok_pressed_time >= HOLD_TIME_MS) {
+    } else if (ev->key == InputKeyOk &&
+               now - s->ok_pressed_time >= HOLD_TIME_MS) {
       s->in_menu = !s->in_menu;
     } else if (s->in_menu) {
       if (ev->key == InputKeyLeft || ev->key == InputKeyRight) {
@@ -129,14 +130,14 @@ static void input_cb(InputEvent *ev, void *ctx) {
 int32_t bgw_flipper_ir_serial_app(void *p) {
   UNUSED(p);
   FlameTunnelState st = {
-    .running = true,
-    .log_to_file = false,
-    .output_raw_ir = false,
-    .last_rng = 0,
-    .mutex = furi_mutex_alloc(FuriMutexTypeNormal),
-    .in_menu = false,
-    .back_pressed_time = 0,
-    .ok_pressed_time = 0,
+      .running = true,
+      .log_to_file = false,
+      .output_raw_ir = false,
+      .last_rng = 0,
+      .mutex = furi_mutex_alloc(FuriMutexTypeNormal),
+      .in_menu = false,
+      .back_pressed_time = 0,
+      .ok_pressed_time = 0,
   };
 
   furi_hal_serial_control_init();
