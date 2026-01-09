@@ -39,6 +39,7 @@ static uint32_t generate_rng(InfraredWorkerSignal *sig) {
 }
 
 static void process_ir(FlameTunnelState *s, InfraredWorkerSignal *sig,
+
                        uint32_t rng) {
   char buf[256];
   int len = 0;
