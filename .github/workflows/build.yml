@@ -1,10 +1,6 @@
 name: "FAP: Build and lint"
 on: [push, pull_request]
 jobs:
-on:
-  pull_request:
-    branches:
-      - main
   ufbt-build-action:
     runs-on: ubuntu-latest
     name: 'ufbt: Build for Dev branch'
