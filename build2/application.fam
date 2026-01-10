@@ -1,0 +1,17 @@
+App(
+  appid="bgw_flipper_ir_serial",
+  name="bgw_flipper_ir_serial",
+  apptype=FlipperAppType.EXTERNAL,
+  entry_point="bgw_flipper_ir_serial_app",
+  fap_category="Tools",
+    requires=[
+    "furi",
+    "gui",
+    "input",
+    "infrared",
+    "storage",
+    "record",
+    "usb-cdc",
+    "serial-control",
+    ]
+)
